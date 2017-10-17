@@ -199,7 +199,7 @@ func (d *decoder) readDocTo(out reflect.Value) {
 				panic(err)
 			}
 			fieldsMap = sinfo.FieldsMap
-			out.Set(sinfo.Zero)
+			//out.Set(sinfo.Zero)
 			if sinfo.InlineMap != -1 {
 				inlineMap = out.Field(sinfo.InlineMap)
 				if !inlineMap.IsNil() && inlineMap.Len() > 0 {
@@ -447,7 +447,13 @@ func (d *decoder) readElemTo(out reflect.Value, kind byte) (good bool) {
 		outk := out.Kind()
 		switch outk {
 		case reflect.Interface, reflect.Ptr, reflect.Struct, reflect.Map:
-			d.readDocTo(out)
+			if out.IsNil() {
+				//not predefined type.
+				d.readDocTo(out)
+			} else {
+				//read to predefined type.
+				d.readDocTo(reflect.ValueOf(out.Interface()))
+			}
 			return true
 		}
 		if setterStyle(outt) != setterNone {
