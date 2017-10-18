@@ -493,6 +493,27 @@ func (d *decoder) readElemTo(out reflect.Value, kind byte) (good bool) {
 		}
 		for outt.Kind() == reflect.Ptr {
 			outt = outt.Elem()
+			if outt.Kind() == reflect.Array {
+				d.readArrayDocTo(reflect.Indirect(reflect.ValueOf(out.Interface())))
+				return true
+			}
+		}
+		if outt.Kind() == reflect.Interface && !out.IsNil() {
+			outt = reflect.TypeOf(out.Interface())
+			for outt.Kind() == reflect.Ptr {
+				outt = outt.Elem()
+				out = reflect.ValueOf(out.Interface())
+				if outt.Kind() == reflect.Array {
+					d.readArrayDocTo(reflect.Indirect(out))
+					return true
+				}
+			}
+			if outt.Kind() == reflect.Array {
+				nval := reflect.Indirect(reflect.New(reflect.ValueOf(out.Interface()).Type()))
+				d.readArrayDocTo(nval)
+				out.Set(nval)
+				return true
+			}
 		}
 		switch outt.Kind() {
 		case reflect.Array:

@@ -536,7 +536,7 @@ func Unmarshal(in []byte, out interface{}) (err error) {
 		raw.Data = in
 		return nil
 	}
-	defer handleErr(&err)
+	// defer handleErr(&err)
 	v := reflect.ValueOf(out)
 	switch v.Kind() {
 	case reflect.Ptr:
