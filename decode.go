@@ -446,7 +446,10 @@ func (d *decoder) readElemTo(out reflect.Value, kind byte) (good bool) {
 		outt := out.Type()
 		outk := out.Kind()
 		switch outk {
-		case reflect.Interface, reflect.Ptr, reflect.Struct, reflect.Map:
+		case reflect.Struct:
+			d.readDocTo(out)
+			return true
+		case reflect.Interface, reflect.Ptr, reflect.Map:
 			if out.IsNil() {
 				//not predefined type.
 				d.readDocTo(out)
